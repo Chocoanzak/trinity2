@@ -1,5 +1,6 @@
 import { HttpParams } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Route, Router } from '@angular/router';
 import { StateHistoryPlugin } from '@datorama/akita';
 import { combineLatest, Subscription } from 'rxjs';
 import { RoutedTabService } from '../routed-tab/state/routed-tab.service';
@@ -18,6 +19,7 @@ import { PlaceMaintenanceService } from './state/place-maintenance.service';
     <button (click)="onSearch()">Search</button>
     <button (click)="undo()">Undo</button>
     <button (click)="redo()">Redo</button>
+    <button (click)="addAreasComponent()">Areas</button>
     <br />
     <button (click)="onCreate()">Create New Place</button>
     <div id="place-table" style="height: 500px"></div>`,
@@ -49,7 +51,9 @@ export class PlaceTableComponent implements OnInit, OnDestroy {
   constructor(
     private query: PlaceMaintenanceQuery,
     private service: PlaceMaintenanceService,
-    private routedTabService: RoutedTabService
+    private routedTabService: RoutedTabService,
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
@@ -109,6 +113,20 @@ export class PlaceTableComponent implements OnInit, OnDestroy {
 
   redo() {
     this.stateHistory.jump(2);
+  }
+
+  addAreasComponent() {
+    // Find the route required
+    const configToCopy = this.router.config.find(
+      (route) => route.path === 'area-maintenance'
+    );
+    // Find the parents configuration and add the route
+    this.route.parent?.routeConfig?.children?.unshift(<Route>configToCopy);
+    // Update the tab
+    this.routedTabService.addTab(
+      { path: 'area-maintenance', label: 'test' },
+      Routes.place
+    );
   }
 
   onRowSelect(place: PlaceMaintenance) {

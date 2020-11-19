@@ -52,7 +52,9 @@ export class AddressTableComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.routerQuery
       .selectQueryParams('addressCode')
-      .subscribe((addressCode) => (this.addressCodeFilter = addressCode)); // TODO fix typing
+      .subscribe(
+        (addressCode) => (this.addressCodeFilter = <string>addressCode)
+      ); // TODO fix typing
 
     // only call api when there's no addresses in the store
     this.getSub = this.query
